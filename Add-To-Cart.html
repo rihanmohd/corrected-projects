@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 ">
+    <!-- navbar  -->
+    <nav class="bg-blue-500 w-full h-16 rounded-sm flex justify-between">
+      <!-- logo -->
+      <div class="text-white text-3xl py-2 pl-10 font-bold">My Shop</div>
+<!-- Cart Icon and Count -->
+      <div class="pr-3 py-3">
+        <button
+          id="cartButton"
+          class="bg-white text-blue-500 font-bold px-4 py-2 rounded-full relative"
+        >
+          Cart (<span id="cartCount">0</span>)
+        </button>
+      </div>
+    </nav>
+
+    <!-- Product Form -->
+    <div class="bg-white p-6 rounded shadow my-6 mx-auto w-[400px]">
+      <h2 class="text-lg font-bold mb-4">Add Product</h2>
+      <input
+        type="url"
+        id="productLink"
+        placeholder="Enter Product URL"
+        class="border rounded p-2 w-full mb-2"
+      />
+      <input
+        type="number"
+        id="productPrice"
+        placeholder="Enter Product Price"
+        class="border rounded p-2 w-full mb-4"
+      />
+      <button
+        onclick="addProduct()"
+        class="bg-blue-700 text-white px-4 py-2 rounded w-full"
+      >
+        Add Product
+      </button>
+    </div>
+
+    <!-- Product List, products will be appended here dynamically -->
+    <div
+      id="productList"
+      class="grid grid-cols-3 gap-4 w-[1200px] mx-auto"
+    ></div>
+
+    <!-- Cart Modal -->
+    <div
+      id="cartModal"
+      class="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center hidden"
+    >
+      <div class="bg-white p-6 rounded shadow-lg w-80">
+        <h2 class="text-xl font-bold mb-4">Your Cart</h2>
+        <ul id="cartItems" class="mb-4"></ul>
+        <p id="totalPrice" class="font-bold mb-4">Total: $0.00</p>
+        <button
+          onclick="closeCart()"
+          class="bg-blue-700 text-white px-4 py-2 rounded w-[90px]"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+    
+    <script>
+      
+      let cart = []; 
+      let cartCount = 0;
+      let productId = 0;
+      // Function to add a product
+      function addProduct() {
+        productId++;
+        const productLink = document.getElementById("productLink").value;
+        const productPrice = parseFloat(
+          document.getElementById("productPrice").value
+        );
+
+        if (!productLink || isNaN(productPrice)) {
+          alert("Please enter a valid product link and price.");
+          return;
+        }
+          //  creating product //
+        const productElement = document.createElement("div");
+        productElement.className = "bg-white p-3 rounded shadow";
+        productElement.innerHTML = `
+        <img src="${productLink}" alt="Product Image" class="w-full h-28 object-cover mb-2">
+  
+      <p class="font-bold">Product ${productId}</p>
+        <p class="text-gray-500">$${productPrice.toFixed(2)}</p>
+        <button onclick="addToCart('${productId}', 'Product ${productId}', ${productPrice})" class="bg-blue-700 text-sm text-white px-2 py-1 mt-2 rounded h-[30px] w-[90px]">Add to Cart</button>
+      `;
+        document.getElementById("productList").appendChild(productElement);
+
+        // Clear inputs
+        document.getElementById("productLink").value = "";
+        document.getElementById("productPrice").value = "";
+      }
+
+      // Function to add a product to the cart
+      function addToCart(id, name, price) {
+        cart.push({ id, name, price });
+        cartCount++;
+        document.getElementById("cartCount").textContent = cartCount;
+      }
+
+      // Function to open the cart modal
+      document.getElementById("cartButton").onclick = function () {
+        const cartItems = document.getElementById("cartItems");
+        cartItems.innerHTML = "";
+        let total = 0;
+
+        cart.forEach((item) => {
+          const cartItem = document.createElement("li");
+          cartItem.className = "flex justify-between";
+          cartItem.innerHTML = `<span>${
+            item.name
+          }</span><span>$${item.price.toFixed(2)}</span>`;
+          // appending to ul
+          cartItems.appendChild(cartItem);
+          total += item.price;
+        });
+
+        document.getElementById(
+          "totalPrice"
+        ).textContent = `Total: $${total.toFixed(2)}`;
+        document.getElementById("cartModal").classList.remove("hidden");
+      };
+
+      // Function to close the cart modal
+      function closeCart() {
+        document.getElementById("cartModal").classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>
